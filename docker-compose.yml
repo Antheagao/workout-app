@@ -1,0 +1,26 @@
+services:
+  db:
+    container_name: workoutDB
+    image: postgres:18.1-alpine
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    restart: unless-stopped
+
+  test_db:
+    container_name: workoutDB_test
+    image: postgres:18.1-alpine
+    volumes:
+      - pgdata_test:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    env_file:
+      - .env
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  pgdata_test:
