@@ -1,13 +1,13 @@
 # Workout Tracker API
 
-A RESTful API built with Go for tracking workouts and exercise routines. This project provides user authentication, workout management, and exercise entry tracking with a PostgreSQL database backend.
+A RESTful API built with Java and Spring Boot for tracking workouts and exercise routines. The application provides user authentication, workout management, and exercise entry tracking with a PostgreSQL database backend.
 
 ## Features
 
 ### User Management
 - **User Registration**: Create new user accounts with username, email, password, and optional bio
-- **Email Validation**: Automatic email format validation using regex
-- **Password Security**: Passwords are hashed using bcrypt with cost factor 12
+- **Email Validation**: Automatic email format validation using Jakarta Bean Validation
+- **Password Security**: Passwords are hashed using BCrypt with cost factor 12
 - **Unique Constraints**: Username and email must be unique across all users
 - **User Profiles**: Store user information including bio and timestamps
 
@@ -16,7 +16,7 @@ A RESTful API built with Go for tracking workouts and exercise routines. This pr
 - **Token Generation**: Generate authentication tokens with 24-hour expiration
 - **Token Hashing**: Tokens are hashed using SHA-256 before storage
 - **Scope-Based Tokens**: Support for different token scopes (currently authentication)
-- **Middleware Protection**: Route-level authentication middleware
+- **Middleware Protection**: Route-level authentication middleware using Spring Interceptors
 - **User Context**: Automatic user context injection for protected routes
 
 ### Workout Management
@@ -36,7 +36,7 @@ A RESTful API built with Go for tracking workouts and exercise routines. This pr
 
 ### Database Features
 - **PostgreSQL Backend**: Robust relational database with proper foreign keys
-- **Database Migrations**: Automated schema migrations using Goose
+- **Database Migrations**: Automated schema migrations using Flyway
 - **Transaction Support**: Atomic operations for workout creation and updates
 - **Cascade Deletes**: Automatic cleanup of related records
 - **Timestamps**: Automatic tracking of created_at and updated_at timestamps
@@ -45,61 +45,90 @@ A RESTful API built with Go for tracking workouts and exercise routines. This pr
 - **RESTful Design**: Clean REST API following best practices
 - **JSON Responses**: Consistent JSON response format with envelope pattern
 - **Error Handling**: Comprehensive error handling with appropriate HTTP status codes
-- **Request Validation**: Input validation for all endpoints
+- **Request Validation**: Input validation for all endpoints using Jakarta Bean Validation
 - **Health Check**: Health check endpoint for monitoring
-- **Chi Router**: Fast and lightweight HTTP router
+- **Spring Boot**: Modern Java framework with dependency injection
 
 ## Technology Stack
 
-- **Language**: Go 1.25.4
+- **Language**: Java 17
+- **Framework**: Spring Boot 3.2.0
 - **Database**: PostgreSQL 18.1
-- **Router**: Chi v5
-- **Database Driver**: pgx/v5
-- **Migrations**: Goose v3
-- **Password Hashing**: bcrypt (golang.org/x/crypto)
+- **ORM**: Spring Data JPA / Hibernate
+- **Database Driver**: PostgreSQL JDBC Driver
+- **Migrations**: Flyway
+- **Password Hashing**: BCrypt (Spring Security)
+- **Token Encoding**: Apache Commons Codec (Base32)
+- **Build Tool**: Maven
 - **Containerization**: Docker & Docker Compose
 
 ## Project Structure
 
 ```
-fem_project/
-├── main.go                 # Application entry point
-├── go.mod                  # Go module dependencies
-├── docker-compose.yml      # Docker services configuration
-├── .env                    # Environment variables (not in repo)
-├── internal/
-│   ├── api/                # HTTP handlers
-│   │   ├── user_handler.go      # User registration endpoint
-│   │   ├── token_handler.go     # Authentication token generation
-│   │   └── workout_handler.go   # Workout CRUD operations
-│   ├── app/                # Application setup
-│   │   └── app.go              # Application initialization
-│   ├── middleware/         # HTTP middleware
-│   │   └── middleware.go       # Authentication middleware
-│   ├── routes/             # Route definitions
-│   │   └── routes.go           # API route setup
-│   ├── store/              # Data access layer
-│   │   ├── database.go          # Database connection & migrations
-│   │   ├── user_store.go        # User data operations
-│   │   ├── workout_store.go     # Workout data operations
-│   │   └── token_store.go       # Token data operations
-│   ├── tokens/             # Token generation logic
-│   │   └── tokens.go            # Token creation utilities
-│   └── utils/              # Utility functions
-│       └── utils.go            # JSON helpers, ID parsing
-└── migrations/             # Database migrations
-    ├── 00001_users.sql
-    ├── 00002_workouts.sql
-    ├── 00003_workout_entries.sql
-    ├── 00004_tokens.sql
-    └── 00005_user_id_alter.sql
+workout-app/
+├── pom.xml                          # Maven project configuration
+├── src/
+│   ├── main/
+│   │   ├── java/com/workoutapp/
+│   │   │   ├── WorkoutApplication.java    # Application entry point
+│   │   │   ├── config/                    # Configuration classes
+│   │   │   │   └── WebConfig.java         # Web configuration (interceptors)
+│   │   │   ├── controller/                # REST controllers
+│   │   │   │   ├── UserController.java    # User registration endpoint
+│   │   │   │   ├── TokenController.java   # Authentication token generation
+│   │   │   │   ├── WorkoutController.java # Workout CRUD operations
+│   │   │   │   └── HealthController.java  # Health check endpoint
+│   │   │   ├── service/                   # Business logic layer
+│   │   │   │   ├── IUserService.java      # User service interface
+│   │   │   │   ├── IWorkoutService.java   # Workout service interface
+│   │   │   │   ├── ITokenService.java     # Token service interface
+│   │   │   │   ├── UserService.java       # User business logic implementation
+│   │   │   │   ├── TokenService.java      # Token business logic implementation
+│   │   │   │   └── WorkoutService.java    # Workout business logic implementation
+│   │   │   ├── repository/                # Data access layer
+│   │   │   │   ├── UserRepository.java    # User data operations
+│   │   │   │   ├── WorkoutRepository.java # Workout data operations
+│   │   │   │   └── TokenRepository.java   # Token data operations
+│   │   │   ├── model/                      # Entity models
+│   │   │   │   ├── User.java               # User entity
+│   │   │   │   ├── Workout.java            # Workout entity
+│   │   │   │   ├── WorkoutEntry.java       # Workout entry entity
+│   │   │   │   └── Token.java               # Token entity
+│   │   │   ├── dto/                        # Data Transfer Objects
+│   │   │   │   ├── RegisterUserRequest.java
+│   │   │   │   ├── CreateTokenRequest.java
+│   │   │   │   ├── CreateWorkoutRequest.java
+│   │   │   │   ├── UpdateWorkoutRequest.java
+│   │   │   │   └── AuthTokenResponse.java
+│   │   │   ├── middleware/                 # HTTP middleware
+│   │   │   │   └── AuthenticationInterceptor.java # Authentication middleware
+│   │   │   ├── util/                       # Utility functions
+│   │   │   │   ├── PasswordUtil.java       # Password hashing utilities
+│   │   │   │   ├── TokenUtil.java          # Token generation utilities
+│   │   │   │   └── JsonResponse.java        # JSON response helpers
+│   │   │   └── exception/                   # Exception handling
+│   │   │       ├── GlobalExceptionHandler.java
+│   │   │       ├── ResourceNotFoundException.java
+│   │   │       ├── UnauthorizedException.java
+│   │   │       ├── ConflictException.java
+│   │   │       └── ValidationException.java
+│   │   └── resources/
+│   │       ├── application.properties       # Application configuration
+│   │       └── db/migration/                # Database migrations
+│   │           ├── V1__create_users.sql
+│   │           ├── V2__create_workouts.sql
+│   │           ├── V3__create_workout_entries.sql
+│   │           └── V4__create_tokens.sql
+│   └── test/                                # Test files
+└── docker-compose.yml                        # Docker services configuration
 ```
 
 ## Setup Instructions
 
 ### Prerequisites
 
-- Go 1.25.4 or later
+- Java 17 or later
+- Maven 3.6+
 - Docker and Docker Compose
 - PostgreSQL 18.1 (or use Docker)
 
@@ -115,6 +144,8 @@ POSTGRES_DB=your_database_name
 POSTGRES_PORT=5432
 ```
 
+Alternatively, you can set these in `application.properties` or as system environment variables.
+
 ### Database Setup
 
 1. Start the PostgreSQL database using Docker Compose:
@@ -125,29 +156,29 @@ docker-compose up -d db
 
 This will start a PostgreSQL container on port 5432.
 
-2. The application will automatically run migrations on startup.
+2. The application will automatically run migrations on startup using Flyway.
 
 ### Running the Application
 
-1. Install dependencies:
+1. Install dependencies and build the project:
 
 ```bash
-go mod download
+mvn clean install
 ```
 
 2. Run the application:
 
 ```bash
-go run main.go
+mvn spring-boot:run
 ```
 
-Or specify a custom port:
+Or run the JAR file:
 
 ```bash
-go run main.go -port 3000
+java -jar target/workout-app-1.0.0.jar
 ```
 
-The server will start on port 8080 by default (or your specified port).
+The server will start on port 8080 by default.
 
 ### Running Tests
 
@@ -212,8 +243,8 @@ Create a new user account.
     "username": "johndoe",
     "email": "john@example.com",
     "bio": "Fitness enthusiast",
-    "created_at": "2024-01-15T10:30:00Z",
-    "updated_at": "2024-01-15T10:30:00Z"
+    "created_at": "2024-01-15T10:30:00",
+    "updated_at": "2024-01-15T10:30:00"
   }
 }
 ```
@@ -244,7 +275,7 @@ Generate an authentication token.
 {
   "auth_token": {
     "token": "ABC123XYZ...",
-    "expiry": "2024-01-16T10:30:00Z"
+    "expiry": "2024-01-16T10:30:00"
   }
 }
 ```
@@ -410,65 +441,65 @@ Delete a workout. **Requires authentication and ownership.**
 ## Data Models
 
 ### User
-```go
+```java
 {
-  "id": int,
-  "username": string (max 50 chars, unique),
-  "email": string (unique),
-  "password_hash": string (not returned in JSON),
-  "bio": string (optional),
-  "created_at": timestamp,
-  "updated_at": timestamp
+  "id": Long,
+  "username": String (max 50 chars, unique),
+  "email": String (unique),
+  "password_hash": String (not returned in JSON),
+  "bio": String (optional),
+  "created_at": LocalDateTime,
+  "updated_at": LocalDateTime
 }
 ```
 
 ### Workout
-```go
+```java
 {
-  "id": int,
-  "user_id": int,
-  "title": string (max 255 chars),
-  "description": string (optional),
-  "duration_minutes": int (> 0),
-  "calories_burned": int (>= 0),
-  "entries": []WorkoutEntry
+  "id": Long,
+  "user_id": Long,
+  "title": String (max 255 chars),
+  "description": String (optional),
+  "duration_minutes": Integer (> 0),
+  "calories_burned": Integer (>= 0),
+  "entries": List<WorkoutEntry>
 }
 ```
 
 ### WorkoutEntry
-```go
+```java
 {
-  "id": int,
-  "exercise_name": string (max 255 chars),
-  "sets": int (> 0),
-  "reps": *int (optional, mutually exclusive with duration_seconds),
-  "duration_seconds": *int (optional, mutually exclusive with reps),
-  "weight": *float64 (optional, max 999.99),
-  "notes": string (optional),
-  "order_index": int
+  "id": Long,
+  "exercise_name": String (max 255 chars),
+  "sets": Integer (> 0),
+  "reps": Integer (optional, mutually exclusive with duration_seconds),
+  "duration_seconds": Integer (optional, mutually exclusive with reps),
+  "weight": Double (optional, max 999.99),
+  "notes": String (optional),
+  "order_index": Integer
 }
 ```
 
 ### Token
-```go
+```java
 {
-  "token": string (plaintext, only returned on creation),
-  "expiry": timestamp,
-  "hash": []byte (not returned),
-  "user_id": int (not returned),
-  "scope": string (not returned)
+  "token": String (plaintext, only returned on creation),
+  "expiry": LocalDateTime,
+  "hash": byte[] (not returned),
+  "user_id": Long (not returned),
+  "scope": String (not returned)
 }
 ```
 
 ## Security Features
 
-- **Password Hashing**: Bcrypt with cost factor 12
+- **Password Hashing**: BCrypt with cost factor 12
 - **Token Hashing**: SHA-256 hashing before database storage
 - **Token Expiration**: 24-hour token lifetime
 - **User Enumeration Prevention**: Authentication errors don't reveal if username exists
 - **Authorization Checks**: Users can only modify their own resources
 - **Input Validation**: Comprehensive validation on all endpoints
-- **SQL Injection Prevention**: Parameterized queries throughout
+- **SQL Injection Prevention**: Parameterized queries via JPA/Hibernate
 
 ## Error Handling
 
@@ -492,17 +523,39 @@ Common HTTP status codes:
 
 ### Running Migrations Manually
 
+Migrations are automatically run on application startup via Flyway. To manually run migrations:
+
 ```bash
-goose -dir migrations postgres "host=localhost user=postgres password=password dbname=workoutdb sslmode=disable" up
+mvn flyway:migrate
 ```
 
 ### Database Connection
 
-The application uses the `pgx` driver for PostgreSQL. Connection pooling is handled automatically by the `database/sql` package.
+The application uses Spring Data JPA with Hibernate for database operations. Connection pooling is handled automatically by HikariCP (included with Spring Boot).
 
 ### Logging
 
-The application uses Go's standard `log` package. Logs include timestamps and are written to stdout.
+The application uses SLF4J with Logback (included with Spring Boot). Logs include timestamps and are written to stdout.
+
+## Architecture
+
+The application follows MVC (Model-View-Controller) architecture with clear separation of concerns:
+
+- **Controllers**: Handle HTTP requests and responses, delegate to services
+- **Services**: Contain business logic, validation, and authorization (implement service interfaces)
+- **Repositories**: Data access layer using Spring Data JPA
+- **Models**: JPA entities representing database tables
+- **DTOs**: Data Transfer Objects for request/response with validation
+- **Exception Handling**: Global exception handler with custom exceptions
+- **Middleware**: Authentication interceptor for protected routes
+
+### Design Patterns
+
+- **Dependency Injection**: Spring's IoC container manages dependencies
+- **Repository Pattern**: Abstract data access through interfaces
+- **Service Layer Pattern**: Business logic separated from controllers
+- **DTO Pattern**: Separate request/response objects from entities
+- **Exception Handling Pattern**: Centralized error handling
 
 ## License
 
@@ -511,4 +564,3 @@ This project is for educational/practice purposes.
 ## Contributing
 
 This is a practice project. Feel free to use it as a reference or starting point for your own projects.
-

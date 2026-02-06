@@ -39,6 +39,7 @@ vendor/
 /bin/
 /dist/
 /build/
+/target/
 
 # Logs
 *.log
@@ -60,3 +61,4 @@ Thumbs.db
 
 # Project specific
 post_notes.txt
+.notes.txt
