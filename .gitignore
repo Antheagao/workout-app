@@ -2,6 +2,7 @@
 .env
 .env.local
 .env.*.local
+SETUP_NEW_REPO.md
 
 # Database
 /database

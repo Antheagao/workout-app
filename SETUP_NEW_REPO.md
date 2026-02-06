@@ -1,7 +1,39 @@
 # Setting Up New GitHub Repository
 
-## Option 1: Start Fresh (Recommended)
-If you want a completely clean history for this Java project:
+## Current Status
+✅ Old remote removed (`fem_project.git`)
+✅ All Java/Spring Boot files committed
+✅ Ready to connect to new GitHub repository
+
+## Next Steps
+
+### 1. Create New Repository on GitHub
+
+1. Go to https://github.com/new
+2. Repository name: `workout-app` (or your preferred name)
+3. Description: "RESTful workout tracking API built with Java and Spring Boot"
+4. Choose **Public** or **Private**
+5. **IMPORTANT**: **DO NOT** check any boxes (no README, .gitignore, or license - we already have these)
+6. Click **"Create repository"**
+
+### 2. Connect Your Local Repository
+
+After creating the repository on GitHub, copy the repository URL and run:
+
+```bash
+# Add the new remote (replace with your actual repository URL)
+git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+
+# Verify the remote was added
+git remote -v
+
+# Push to the new repository
+git push -u origin main
+```
+
+### Alternative: Start Completely Fresh (Optional)
+
+If you want to remove the old commit history and start with a clean slate:
 
 ```bash
 # Remove old git history
@@ -15,25 +47,7 @@ git branch -M main
 git add .
 git commit -m "Initial commit: Workout Tracker API - Java/Spring Boot"
 
-# Create new repository on GitHub, then:
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
-git push -u origin main
-```
-
-## Option 2: Keep History but Change Remote
-If you want to keep the git history but just change the remote:
-
-```bash
-# Remove old remote (already done)
-# git remote remove origin
-
-# Stage all changes
-git add .
-git commit -m "Migrate from Go to Java/Spring Boot"
-
-# Create new repository on GitHub, then:
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
-git push -u origin main
+# Then follow step 2 above to connect to GitHub
 ```
 
 ## Steps to Create New GitHub Repository:
